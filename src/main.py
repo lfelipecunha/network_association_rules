@@ -14,7 +14,7 @@ def parse_accuracy(row, index):
     rule = association_rules[index]
     semester_hour = nar.convert_index_to_semeter_hour(index)
 
-    result = "T" if rule[1] <= row else "F"
+    result = "T" if row - rule[1] >= -0.02 else "F"
     return [semester_hour[0], semester_hour[1], rule[0], rule[1], row,result]
 
 #util.generate_random_data('data.csv', 80000)

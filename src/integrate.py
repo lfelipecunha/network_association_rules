@@ -1,8 +1,10 @@
 import csv
 from datetime import datetime
 
-def convert_timestamp_to_semester_hour(timestamp):
-    date = datetime.fromtimestamp(float(timestamp))
+DATE_FORMAT = '%Y-%m-%d %H%M%S%z'
+
+def convert_date_to_semester_hour(date_string):
+    date = datetime.strptime(date_string, DATE_FORMAT)
     month = date.month
     hour = date.hour
     semester = 4
@@ -15,25 +17,18 @@ def convert_timestamp_to_semester_hour(timestamp):
 
     return (semester, hour)
 
-def convert_tshark_date_to_timestamp(date):
-    date = date.split('.')[0]
-    return datetime.strptime(date,'%b %d, %Y %H:%M:%S').timestamp()
-
 results = []
 
-#filename = '../data_base/combined.cap'
-#delimiter = ' '
-
-filename = '../data_base/TCP 80 University Napoli/data.csv'
-delimiter = ';'
+filename = '../data_base/data.csv'
+delimiter = ','
 
 with open(filename, 'r') as cap_file:
     data = list(csv.reader(cap_file, delimiter=delimiter))
-
+    data.pop(0)
     sumarized_data = {}
 
     for row in data:
-        date = datetime.fromtimestamp(convert_tshark_date_to_timestamp(row[0]))
+        date = datetime.strptime(row[1].replace(':',''),DATE_FORMAT)
         index = date.strftime('%Y-%m-%d %H')
         if not index in sumarized_data:
             sumarized_data[index] = []
@@ -45,30 +40,32 @@ with open(filename, 'r') as cap_file:
         day_hour = sumarized_data[i]
         total = 0
         for row in day_hour:
-            total += float(row[2])
-        new_row = day_hour[0]
-        new_row.append(0)
-        new_row[3] = total / len(day_hour)
+            total += float(row[0])
+        new_row = [day_hour[0][1].replace(':',''), total / len(day_hour)]
 
         new_data.append(new_row)
 
     max_load = 0
     min_load = 9999999999
     for row in new_data:
-        load = row[3]
+        load = row[1]
+        print(load)
         if load > max_load:
             max_load = load
         if load < min_load:
             min_load = load
 
-    step = (max_load - min_load)/4
+    step = (max_load - min_load)/5
+    print(min_load, max_load, step)
 
     for row in new_data:
-        sh = convert_timestamp_to_semester_hour(convert_tshark_date_to_timestamp(row[0]))
-        load = float(row[3])
+        sh = convert_date_to_semester_hour(row[0])
+        load = float(row[1])
         load = load-min_load
         level = int(load / step)
-        results.append([sh[0], sh[1],level+1])
+        if level != 5:
+            level += 1
+        results.append([sh[0], sh[1],level])
 
 data_size = len(results)
 trainning = int(0.6 * data_size)

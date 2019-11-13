@@ -12,9 +12,9 @@ def convert_datetime_to_semester_hour(date):
     if (month == 2 and day >= 25) or (month >= 3 and month <= 6) or (month == 7 and day <= 20):
         semester=1
     elif (month==7 and day > 20) or (month == 8 and day <= 5):
-        semester = 2
-    elif (month==8 and day > 5) or (month > 8 and month <= 11) or (month == 12 and day <= 20):
         semester = 3
+    elif (month==8 and day > 5) or (month > 8 and month <= 11) or (month == 12 and day <= 20):
+        semester = 2
 
     return (semester, hour)
 
@@ -106,5 +106,5 @@ def generate_data(filename, date, end_date):
             writer.writerow([sh[0], sh[1], level])
 
 base_path, filename = os.path.split(__file__)
-generate_data(base_path + '/../data_base/trainning_data.csv', datetime(2012, 1, 1),datetime(2017, 12, 31, 23))
-generate_data(base_path + '/../data_base/testing_data.csv', datetime(2011, 1, 1),datetime(2018, 12, 31, 23))
+generate_data(base_path + '/../data_base/trainning_data.csv', datetime(2013, 1, 1),datetime(2017, 12, 31, 23))
+generate_data(base_path + '/../data_base/testing_data.csv', datetime(2018, 1, 1),datetime(2018, 12, 31, 23))

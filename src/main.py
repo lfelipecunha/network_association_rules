@@ -14,11 +14,13 @@ def parse_accuracy(row, index):
     rule = association_rules[index]
     semester_hour = nar.convert_index_to_semeter_hour(index)
 
-    result = "T" if row - rule[1] >= -0.02 else "F"
+    result = "T" if row >= rule[1] else "F"
     return [semester_hour[0], semester_hour[1], rule[0], rule[1], row,result]
 
 #util.generate_random_data('data.csv', 80000)
 base_path, filename = os.path.split(__file__)
+if base_path == '':
+    base_path = '.'
 trainning_data = util.get_data_from_file(base_path + '/../data_base/trainning_data.csv')
 print("Generating association rules...")
 nar = NetworkAssociationRules(trainning_data)
